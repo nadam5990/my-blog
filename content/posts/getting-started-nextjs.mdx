@@ -1,0 +1,83 @@
+---
+title: "Next.js 15 App Router로 블로그 만들기"
+date: "2026-05-25"
+tags: ["nextjs", "react", "typescript", "블로그"]
+category: "개발"
+description: "Next.js 15의 App Router와 MDX를 활용해 개인 블로그를 만드는 방법을 단계별로 알아봅니다."
+draft: false
+---
+
+## 왜 Next.js인가?
+
+개인 블로그를 만들 때 다양한 선택지가 있습니다. WordPress, Notion, Tistory 같은 플랫폼도 있고, Hugo, Gatsby 같은 정적 사이트 생성기도 있죠.
+
+그 중에서 Next.js를 선택한 이유는 다음과 같습니다:
+
+1. **React 기반** — 이미 익숙한 기술 스택
+2. **App Router** — 최신 React 서버 컴포넌트 지원
+3. **Vercel 배포** — 간편한 CI/CD
+
+## 프로젝트 초기 설정
+
+```bash
+npx create-next-app@latest my-blog \
+  --typescript \
+  --tailwind \
+  --app \
+  --import-alias="@/*"
+```
+
+그 다음 필요한 패키지를 설치합니다:
+
+```bash
+npm install next-mdx-remote gray-matter next-themes fuse.js
+```
+
+## MDX로 게시물 작성하기
+
+MDX는 마크다운에 JSX를 결합한 형식입니다. 일반 마크다운처럼 쓰면서도 React 컴포넌트를 사용할 수 있어요.
+
+게시물 파일은 `content/posts/` 폴더에 저장합니다:
+
+```
+content/
+└── posts/
+    ├── hello-world.mdx
+    └── getting-started-nextjs.mdx
+```
+
+각 파일 상단에는 **프론트매터(frontmatter)**를 작성합니다:
+
+```yaml
+---
+title: "게시물 제목"
+date: "2026-05-25"
+tags: ["nextjs", "react"]
+category: "개발"
+description: "게시물 설명"
+---
+```
+
+## App Router의 장점
+
+Next.js 15의 App Router에서는 **서버 컴포넌트**가 기본입니다. 덕분에:
+
+- 파일 시스템 접근을 서버에서 직접 수행
+- JavaScript 번들 크기 감소
+- 더 빠른 초기 로드
+
+```typescript
+// app/blog/page.tsx - 서버 컴포넌트
+import { getAllPosts } from '@/lib/posts'
+
+export default function BlogPage() {
+  const posts = getAllPosts() // 서버에서 직접 파일 읽기
+  return <PostList posts={posts} />
+}
+```
+
+## 마치며
+
+Next.js와 MDX의 조합은 개발자 블로그에 정말 잘 맞습니다. 마크다운으로 편하게 글을 쓰면서도, 필요할 때는 React 컴포넌트로 인터랙티브한 요소를 추가할 수 있거든요.
+
+다음 글에서는 다크모드 구현에 대해 다뤄볼게요!

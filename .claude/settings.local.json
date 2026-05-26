@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Sleep -Seconds 2; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 10; Write-Host \"HOME: $\\($r.StatusCode\\)\" } catch { Write-Host \"HOME ERROR: $_\" }; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/blog\" -UseBasicParsing -TimeoutSec 10; Write-Host \"BLOG: $\\($r.StatusCode\\)\" } catch { Write-Host \"BLOG ERROR: $_\" }; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/blog/hello-world\" -UseBasicParsing -TimeoutSec 10; Write-Host \"POST: $\\($r.StatusCode\\)\" } catch { Write-Host \"POST ERROR: $_\" }; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/tags\" -UseBasicParsing -TimeoutSec 10; Write-Host \"TAGS: $\\($r.StatusCode\\)\" } catch { Write-Host \"TAGS ERROR: $_\" })",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

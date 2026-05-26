@@ -1,0 +1,137 @@
+---
+title: "Tailwind CSS v4 + next-themes로 다크모드 구현하기"
+date: "2026-05-24"
+tags: ["tailwindcss", "nextjs", "다크모드", "css"]
+category: "개발"
+description: "Tailwind CSS v4의 새로운 방식과 next-themes를 함께 사용해 완벽한 다크모드를 구현하는 방법을 알아봅니다."
+draft: false
+---
+
+## Tailwind CSS v4의 변화
+
+Tailwind CSS v4는 기존 v3과 설정 방식이 크게 달라졌습니다.
+
+### v3 방식 (구버전)
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  darkMode: 'class',
+  // ...
+}
+```
+
+### v4 방식 (신버전)
+
+v4에서는 `tailwind.config.js` 파일 대신 **CSS 파일에서 직접 설정**합니다:
+
+```css
+/* globals.css */
+@import "tailwindcss";
+
+/* 클래스 기반 다크모드 활성화 */
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+이게 핵심입니다! `@custom-variant` 지시어로 `.dark` 클래스가 적용된 요소와 그 자식에게 다크모드 스타일을 적용합니다.
+
+## next-themes 설정
+
+`next-themes`는 Next.js에서 테마 관리를 쉽게 해주는 라이브러리입니다.
+
+```bash
+npm install next-themes
+```
+
+루트 레이아웃에 `ThemeProvider`를 감싸줍니다:
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from 'next-themes'
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="ko" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+- `attribute="class"` — `<html>` 태그에 `dark` 클래스를 추가
+- `defaultTheme="system"` — 시스템 설정을 기본값으로
+- `enableSystem` — 시스템 다크모드 감지 활성화
+
+## ThemeToggle 컴포넌트
+
+```tsx
+'use client'
+
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { Sun, Moon } from 'lucide-react'
+
+export default function ThemeToggle() {
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme, setTheme } = useTheme()
+
+  // ⚠️ 하이드레이션 불일치 방지를 위한 mounted 가드
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return <div className="w-9 h-9" />
+
+  return (
+    <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
+      {resolvedTheme === 'dark' ? <Sun /> : <Moon />}
+    </button>
+  )
+}
+```
+
+### 왜 `mounted` 가드가 필요한가?
+
+서버에서 렌더링할 때는 현재 테마를 알 수 없습니다 (localStorage가 없으니까요). 그래서 `mounted` 상태가 `true`가 될 때까지 — 즉, 클라이언트에서 hydration이 완료될 때까지 — 아이콘을 렌더링하지 않습니다.
+
+이 처리를 빠뜨리면 콘솔에 이런 경고가 뜹니다:
+
+```
+Warning: Hydration failed because the initial UI does not match
+what was rendered on the server.
+```
+
+## CSS 변수로 테마 관리
+
+색상을 하드코딩하는 대신 CSS 변수를 활용하면 테마 전환이 훨씬 깔끔해집니다:
+
+```css
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --accent: #6366f1;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --accent: #818cf8;
+}
+```
+
+그 다음 Tailwind에 등록:
+
+```css
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+}
+```
+
+이제 `bg-background`, `text-foreground`, `text-accent` 같은 클래스로 사용할 수 있습니다.
+
+## 마치며
+
+Tailwind v4의 CSS-first 접근 방식에 처음엔 낯설었지만, 오히려 더 직관적이라는 걸 느꼈습니다. 설정 파일 없이 CSS 한 곳에서 모든 것을 관리할 수 있다는 점이 마음에 들어요. 🌙
