@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { getAllPosts, getAllTags, getAllCategories } from '@/lib/posts'
 
+export const dynamic = 'force-static'
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://my-blog.vercel.app'
 
 export default function sitemap(): MetadataRoute.Sitemap {
