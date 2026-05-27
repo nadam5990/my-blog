@@ -1,0 +1,87 @@
+---
+title: "오늘 배운 것: JavaScript async/await로 비동기 코드 깔끔하게 쓰기"
+date: "2026-05-27"
+tags: ["TIL", "JavaScript", "비동기"]
+category: "학습"
+description: "Promise 콜백 지옥을 탈출하는 async/await 완전 정복"
+draft: false
+---
+
+## 비동기 처리가 왜 필요할까?
+
+웹 개발을 하다 보면 서버에서 데이터를 가져오거나, 파일을 읽거나, 타이머를 기다리는 작업을 자주 만나게 된다.
+이런 작업들은 시간이 걸리기 때문에 **비동기(asynchronous)** 로 처리해야 한다.
+그렇지 않으면 데이터를 기다리는 동안 브라우저가 완전히 멈춰버린다.
+
+## 예전 방식: 콜백 지옥
+
+예전에는 비동기 작업이 끝난 뒤 실행할 코드를 **콜백 함수**로 전달했다.
+
+```javascript
+fetch('/api/user', function(user) {
+  fetch('/api/posts?userId=' + user.id, function(posts) {
+    fetch('/api/comments?postId=' + posts[0].id, function(comments) {
+      console.log(comments); // 세 번 중첩된 콜백... 😵
+    });
+  });
+});
+```
+
+들여쓰기가 점점 깊어지고, 에러 처리까지 추가하면 코드가 걷잡을 수 없이 복잡해진다.
+이걸 **"콜백 지옥(callback hell)"** 이라고 부른다.
+
+## async/await 등장
+
+`async/await`는 ES2017에서 도입된 문법으로, 비동기 코드를 마치 **동기 코드처럼** 읽기 쉽게 작성할 수 있게 해준다.
+
+```javascript
+async function loadComments() {
+  try {
+    const userRes = await fetch('/api/user');
+    const user = await userRes.json();
+
+    const postsRes = await fetch(`/api/posts?userId=${user.id}`);
+    const posts = await postsRes.json();
+
+    const commentsRes = await fetch(`/api/comments?postId=${posts[0].id}`);
+    const comments = await commentsRes.json();
+
+    console.log(comments); // 훨씬 깔끔하다! 🎉
+  } catch (error) {
+    console.error('에러 발생:', error);
+  }
+}
+```
+
+핵심 규칙은 두 가지다.
+
+1. `await`는 반드시 `async` 함수 안에서만 쓸 수 있다.
+2. `await` 뒤에는 `Promise`를 반환하는 함수가 와야 한다.
+
+## 병렬로 실행하기: Promise.all
+
+여러 요청이 서로 독립적이라면 `await`를 하나씩 쓰는 것보다 `Promise.all`로 동시에 실행하는 게 훨씬 빠르다.
+
+```javascript
+async function loadDashboard() {
+  // ❌ 순차 실행: 총 3초 걸림 (1초 + 1초 + 1초)
+  const user = await fetchUser();
+  const posts = await fetchPosts();
+  const stats = await fetchStats();
+
+  // ✅ 병렬 실행: 총 1초 걸림 (동시에 실행)
+  const [user, posts, stats] = await Promise.all([
+    fetchUser(),
+    fetchPosts(),
+    fetchStats(),
+  ]);
+}
+```
+
+## 느낀 점
+
+`async/await`를 처음 봤을 때는 그냥 문법 설탕(syntactic sugar)이라고 가볍게 생각했는데, 직접 복잡한 API 호출 코드를 리팩터링해보니 가독성이 정말 크게 달라졌다.
+특히 `try/catch`로 에러를 한 곳에서 처리할 수 있다는 점이 콜백 방식보다 훨씬 직관적이었다.
+
+`Promise.all`은 성능 최적화에도 직결되는 내용이라, API 요청이 많은 프로젝트에서는 꼭 챙겨야 할 패턴인 것 같다.
+앞으로는 비동기 코드를 짤 때 "이 요청들이 서로 의존하는가?"를 먼저 생각하는 습관을 들여야겠다.
