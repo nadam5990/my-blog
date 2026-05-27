@@ -12,10 +12,12 @@ export default function BlogPage() {
   const posts = getAllPosts()
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">블로그</h1>
-      <p className="text-[var(--muted-foreground)] mb-8">
-        총 <span className="font-medium text-[var(--foreground)]">{posts.length}</span>개의 게시물
+    <div className="max-w-3xl mx-auto px-6 py-16">
+      <h1 className="text-2xl font-semibold text-[var(--foreground)] mb-1 tracking-tight">
+        블로그
+      </h1>
+      <p className="text-sm text-[var(--muted-foreground)] mb-10">
+        {posts.length}개의 게시물
       </p>
 
       <SearchBar posts={posts} />

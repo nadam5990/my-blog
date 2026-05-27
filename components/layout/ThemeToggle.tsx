@@ -13,7 +13,7 @@ export default function ThemeToggle() {
   }, [])
 
   if (!mounted) {
-    return <div className="w-9 h-9 rounded-lg" />
+    return <div className="w-8 h-8" />
   }
 
   const isDark = resolvedTheme === 'dark'
@@ -21,14 +21,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="w-9 h-9 flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--muted)] hover:bg-[var(--border)] transition-colors"
+      className="w-8 h-8 flex items-center justify-center rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
       aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
     >
-      {isDark ? (
-        <Sun size={18} className="text-yellow-400" />
-      ) : (
-        <Moon size={18} className="text-slate-600" />
-      )}
+      {isDark ? <Sun size={16} /> : <Moon size={16} />}
     </button>
   )
 }

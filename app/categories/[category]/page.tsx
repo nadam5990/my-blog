@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params
   const decodedCategory = decodeURIComponent(category)
   return {
-    title: `${decodedCategory} 카테고리`,
+    title: decodedCategory,
     description: `${decodedCategory} 카테고리의 게시물 목록입니다.`,
   }
 }
@@ -31,20 +31,20 @@ export default async function CategoryPage({ params }: Props) {
   if (posts.length === 0) notFound()
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-3xl mx-auto px-6 py-16">
       <Link
         href="/categories"
-        className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] mb-8 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] mb-12 transition-colors"
       >
-        <ArrowLeft size={16} />
-        카테고리 목록으로
+        <ArrowLeft size={14} />
+        카테고리
       </Link>
 
-      <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">
+      <h1 className="text-2xl font-semibold text-[var(--foreground)] mb-1 tracking-tight">
         {decodedCategory}
       </h1>
-      <p className="text-[var(--muted-foreground)] mb-8">
-        <span className="font-medium text-[var(--foreground)]">{posts.length}</span>개의 게시물
+      <p className="text-sm text-[var(--muted-foreground)] mb-4">
+        {posts.length}개의 게시물
       </p>
 
       <PostList posts={posts} />

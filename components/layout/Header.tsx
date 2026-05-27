@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, X, PenLine } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 const navLinks = [
@@ -18,58 +18,58 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm">
-      <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-lg text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+          className="font-semibold text-[var(--foreground)] hover:text-[var(--muted-foreground)] transition-colors tracking-tight"
         >
-          <PenLine size={22} className="text-[var(--accent)]" />
-          <span>My Blog</span>
+          My Blog
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`text-sm transition-colors ${
                 pathname.startsWith(link.href)
-                  ? 'bg-[var(--muted)] text-[var(--accent)]'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]'
+                  ? 'text-[var(--foreground)] font-medium'
+                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
               }`}
             >
               {link.label}
             </Link>
           ))}
+          <ThemeToggle />
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Mobile */}
+        <div className="md:hidden flex items-center gap-2">
           <ThemeToggle />
-          {/* Mobile menu button */}
           <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--muted)] transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="메뉴 열기"
           >
-            {isOpen ? <X size={18} /> : <Menu size={18} />}
+            {isOpen ? <X size={16} /> : <Menu size={16} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Nav */}
       {isOpen && (
-        <nav className="md:hidden border-t border-[var(--border)] bg-[var(--background)] px-4 py-3 flex flex-col gap-1">
+        <nav className="md:hidden border-t border-[var(--border)] bg-[var(--background)] px-6 py-4 flex flex-col gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`py-2 text-sm transition-colors ${
                 pathname.startsWith(link.href)
-                  ? 'bg-[var(--muted)] text-[var(--accent)]'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]'
+                  ? 'text-[var(--foreground)] font-medium'
+                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
               }`}
             >
               {link.label}

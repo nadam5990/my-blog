@@ -9,11 +9,12 @@ export default function TagBadge({ tag, count }: TagBadgeProps) {
   return (
     <Link
       href={`/tags/${encodeURIComponent(tag)}`}
-      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--muted)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors border border-[var(--border)]"
+      className="inline-flex items-center gap-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
     >
-      <span>#{tag}</span>
+      <span className="text-[var(--border)]">#</span>
+      <span>{tag}</span>
       {count !== undefined && (
-        <span className="opacity-70">({count})</span>
+        <span className="text-[var(--border)]">({count})</span>
       )}
     </Link>
   )

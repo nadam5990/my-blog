@@ -7,7 +7,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrettyCode from 'rehype-pretty-code'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { Calendar, Clock, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { getAllSlugs, getPostBySlug } from '@/lib/posts'
 import TagBadge from '@/components/blog/TagBadge'
@@ -73,42 +73,38 @@ export default async function PostPage({ params }: Props) {
   if (!post) notFound()
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      {/* Back button */}
+    <div className="max-w-3xl mx-auto px-6 py-16">
+      {/* Back */}
       <Link
         href="/blog"
-        className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] mb-8 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] mb-12 transition-colors"
       >
-        <ArrowLeft size={16} />
-        블로그 목록으로
+        <ArrowLeft size={14} />
+        블로그
       </Link>
 
-      {/* Post header */}
-      <header className="mb-10">
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
+      {/* Header */}
+      <header className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
           <CategoryBadge category={post.frontmatter.category} />
-          <div className="flex items-center gap-3 text-xs text-[var(--muted-foreground)] ml-auto">
-            <span className="flex items-center gap-1">
-              <Calendar size={12} />
-              {format(new Date(post.frontmatter.date), 'yyyy년 M월 d일', { locale: ko })}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock size={12} />
-              {post.readingTime}
-            </span>
-          </div>
+          <span className="text-[var(--border)] text-xs">·</span>
+          <time className="text-xs text-[var(--muted-foreground)]">
+            {format(new Date(post.frontmatter.date), 'yyyy년 M월 d일', { locale: ko })}
+          </time>
+          <span className="text-[var(--border)] text-xs">·</span>
+          <span className="text-xs text-[var(--muted-foreground)]">{post.readingTime}</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] leading-tight mb-4">
+        <h1 className="text-3xl font-semibold text-[var(--foreground)] leading-tight mb-4 tracking-tight">
           {post.frontmatter.title}
         </h1>
 
-        <p className="text-[var(--muted-foreground)] text-lg leading-relaxed mb-6">
+        <p className="text-[var(--muted-foreground)] leading-relaxed mb-6">
           {post.frontmatter.description}
         </p>
 
         {post.frontmatter.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {post.frontmatter.tags.map((tag) => (
               <TagBadge key={tag} tag={tag} />
             ))}
@@ -116,10 +112,20 @@ export default async function PostPage({ params }: Props) {
         )}
       </header>
 
-      <hr className="border-[var(--border)] mb-10" />
+      <hr className="border-[var(--border)] mb-12" />
 
-      {/* MDX Content */}
-      <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-[var(--foreground)] prose-a:text-[var(--accent)] prose-code:text-[var(--accent)] prose-pre:bg-transparent prose-pre:p-0">
+      {/* Content */}
+      <article className="prose prose-slate dark:prose-invert max-w-none
+        prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[var(--foreground)]
+        prose-p:text-[var(--foreground)] prose-p:leading-relaxed
+        prose-a:text-[var(--foreground)] prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-[var(--muted-foreground)]
+        prose-strong:text-[var(--foreground)]
+        prose-code:text-[var(--foreground)] prose-code:font-normal
+        prose-pre:bg-transparent prose-pre:p-0
+        prose-blockquote:border-[var(--border)] prose-blockquote:text-[var(--muted-foreground)]
+        prose-hr:border-[var(--border)]
+        prose-img:rounded-md
+      ">
         <MDXRemote
           source={post.content}
           components={mdxComponents}
@@ -128,7 +134,9 @@ export default async function PostPage({ params }: Props) {
       </article>
 
       {/* Comments */}
-      <GiscusComments />
+      <div className="mt-16 pt-12 border-t border-[var(--border)]">
+        <GiscusComments />
+      </div>
     </div>
   )
 }

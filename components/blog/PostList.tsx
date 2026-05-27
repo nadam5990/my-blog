@@ -9,14 +9,14 @@ interface PostListProps {
 export default function PostList({ posts, emptyMessage = '게시물이 없습니다.' }: PostListProps) {
   if (posts.length === 0) {
     return (
-      <div className="text-center py-16 text-[var(--muted-foreground)]">
-        <p className="text-lg">{emptyMessage}</p>
+      <div className="py-20 text-center">
+        <p className="text-[var(--muted-foreground)]">{emptyMessage}</p>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-4">
+    <div>
       {posts.map((post) => (
         <PostCard key={post.slug} post={post} />
       ))}

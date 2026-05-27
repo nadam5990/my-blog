@@ -33,11 +33,11 @@ export default function SearchBar({ posts }: SearchBarProps) {
   }, [])
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-xl mx-auto mb-8">
+    <div ref={containerRef} className="relative mb-10">
       <div className="relative">
         <Search
-          size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]"
+          size={15}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--border)]"
         />
         <input
           type="text"
@@ -47,31 +47,31 @@ export default function SearchBar({ posts }: SearchBarProps) {
             setIsOpen(true)
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="게시물 검색..."
-          className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-[var(--accent)] transition-colors text-sm"
+          placeholder="검색..."
+          className="w-full pl-9 pr-9 py-2 border border-[var(--border)] bg-transparent text-[var(--foreground)] placeholder:text-[var(--border)] focus:outline-none focus:border-[var(--muted-foreground)] transition-colors text-sm rounded-md"
         />
         {query && (
           <button
             onClick={() => { setQuery(''); setIsOpen(false) }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--border)] hover:text-[var(--muted-foreground)] transition-colors"
           >
-            <X size={16} />
+            <X size={14} />
           </button>
         )}
       </div>
 
       {isOpen && query.length >= 2 && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-[var(--background)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-[var(--background)] border border-[var(--border)] rounded-md shadow-sm overflow-hidden">
           {results.length > 0 ? (
             <ul>
               {results.map((post) => (
-                <li key={post.slug}>
+                <li key={post.slug} className="border-b border-[var(--border)] last:border-0">
                   <Link
                     href={`/blog/${post.slug}`}
                     onClick={() => { setQuery(''); setIsOpen(false) }}
                     className="block px-4 py-3 hover:bg-[var(--muted)] transition-colors"
                   >
-                    <p className="font-medium text-sm text-[var(--foreground)] line-clamp-1">
+                    <p className="text-sm font-medium text-[var(--foreground)] line-clamp-1">
                       {post.frontmatter.title}
                     </p>
                     <p className="text-xs text-[var(--muted-foreground)] line-clamp-1 mt-0.5">
@@ -82,8 +82,8 @@ export default function SearchBar({ posts }: SearchBarProps) {
               ))}
             </ul>
           ) : (
-            <div className="px-4 py-6 text-center text-sm text-[var(--muted-foreground)]">
-              &ldquo;{query}&rdquo;에 대한 검색 결과가 없습니다.
+            <div className="px-4 py-5 text-center text-sm text-[var(--muted-foreground)]">
+              &ldquo;{query}&rdquo;에 대한 결과가 없습니다.
             </div>
           )}
         </div>
