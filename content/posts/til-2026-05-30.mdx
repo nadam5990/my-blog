@@ -1,0 +1,97 @@
+---
+title: "오늘 배운 것: TypeScript 타입 어노테이션으로 버그 미리 잡기"
+date: "2026-05-30"
+tags: ["TIL", "TypeScript", "JavaScript", "타입시스템"]
+category: "학습"
+description: "TypeScript의 기본 타입 어노테이션을 배우면 런타임 버그를 코드 작성 단계에서 미리 막을 수 있다"
+draft: false
+---
+
+## TypeScript가 뭐길래 다들 쓰는 걸까?
+
+JavaScript로 코딩하다 보면 이런 황당한 상황을 겪게 된다.
+
+```js
+function add(a, b) {
+  return a + b;
+}
+
+console.log(add(1, 2));   // 3 ✅
+console.log(add("1", 2)); // "12" 🤯
+```
+
+분명히 숫자를 더하는 함수인데, 문자열을 넣으면 그냥 이어붙여버린다. JavaScript는 타입을 따지지 않으니 오류도 안 낸다. 이런 버그는 실제 서비스에서 터지기 전까지 모르는 경우가 많다.
+
+TypeScript는 이 문제를 **코드 작성 단계에서** 잡아준다.
+
+## 기본 타입 어노테이션
+
+TypeScript에서 변수나 함수 파라미터에 `: 타입` 형식으로 타입을 지정할 수 있다.
+
+```ts
+// 변수에 타입 지정
+let name: string = "철수";
+let age: number = 25;
+let isDone: boolean = false;
+
+// 잘못된 타입을 넣으면 편집기에서 바로 빨간 줄!
+let score: number = "백점"; // ❌ 오류: string은 number에 넣을 수 없음
+```
+
+함수에도 파라미터 타입과 반환 타입을 명시할 수 있다.
+
+```ts
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+console.log(add(1, 2));   // 3 ✅
+console.log(add("1", 2)); // ❌ 컴파일 오류 — 실행 전에 잡힌다!
+```
+
+## 배열과 객체 타입
+
+배열은 `타입[]` 형식으로, 객체는 `interface`로 타입을 정의한다.
+
+```ts
+// 숫자 배열
+const scores: number[] = [90, 85, 100];
+
+// 객체 타입 정의
+interface User {
+  name: string;
+  age: number;
+  email?: string; // ?는 선택 속성 (없어도 됨)
+}
+
+const user: User = {
+  name: "영희",
+  age: 28,
+};
+
+// 이렇게 쓰면 오류
+const badUser: User = {
+  name: "민준",
+  // age가 없으면 ❌ 오류!
+};
+```
+
+## union 타입으로 여러 타입 허용하기
+
+`|` 기호로 여러 타입 중 하나를 허용할 수도 있다.
+
+```ts
+function printId(id: number | string) {
+  console.log("아이디:", id);
+}
+
+printId(101);      // ✅
+printId("user_1"); // ✅
+printId(true);     // ❌ boolean은 안 됨
+```
+
+## 느낀 점
+
+처음에는 "그냥 JavaScript 쓰면 되는데 왜 TypeScript까지 배워야 해?"라고 생각했다. 그런데 막상 써보니 편집기(VS Code)가 타입 오류를 실시간으로 알려줘서 코드 자신감이 확 올라간다. 특히 함수의 파라미터 타입을 보면 "이 함수에 뭘 넣어야 하는지"가 한눈에 보여서, 문서를 따로 찾아볼 필요가 줄어드는 게 진짜 편리하다.
+
+TypeScript가 처음에는 어색하게 느껴질 수 있지만, 규모가 조금만 커져도 타입이 없으면 굉장히 불안해진다는 걸 느꼈다. 앞으로도 꾸준히 익혀나가야겠다.
