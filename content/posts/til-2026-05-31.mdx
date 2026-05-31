@@ -1,0 +1,84 @@
+---
+title: "오늘 배운 것: React useState 훅으로 상태 관리 시작하기"
+date: "2026-05-31"
+tags: ["TIL", "React", "useState", "훅"]
+category: "학습"
+description: "React에서 useState 훅을 사용하면 컴포넌트 안의 데이터를 손쉽게 관리하고 화면을 자동으로 업데이트할 수 있다"
+draft: false
+---
+
+## 상태(State)가 뭔데 이렇게 중요해?
+
+React를 처음 배울 때 가장 먼저 부딪히는 개념이 바로 **상태(state)**다. 상태란 쉽게 말해 "컴포넌트가 기억하고 있는 데이터"다. 버튼을 몇 번 눌렀는지, 입력창에 뭐가 써 있는지, 메뉴가 열려 있는지 닫혀 있는지 — 이런 것들이 모두 상태다.
+
+일반 변수로는 이걸 처리할 수 없다. 변수를 바꿔도 화면이 다시 그려지지 않기 때문이다. 그래서 React는 `useState`라는 훅을 제공한다.
+
+## useState 기본 사용법
+
+```jsx
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>현재 카운트: {count}</p>
+      <button onClick={() => setCount(count + 1)}>+1 증가</button>
+      <button onClick={() => setCount(count - 1)}>-1 감소</button>
+      <button onClick={() => setCount(0)}>초기화</button>
+    </div>
+  );
+}
+```
+
+`useState(0)`에서 `0`은 초깃값이다. 반환값은 배열인데, 첫 번째 요소는 현재 상태값(`count`), 두 번째 요소는 상태를 업데이트하는 함수(`setCount`)다. 이 구조를 **배열 구조 분해 할당**으로 받아서 쓰는 것이다.
+
+## 문자열과 객체도 상태로 쓸 수 있다
+
+숫자뿐 아니라 어떤 값이든 상태로 관리할 수 있다.
+
+```jsx
+function ToggleButton() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <button onClick={() => setIsOpen(!isOpen)}>
+      메뉴가 {isOpen ? '열려' : '닫혀'} 있어요
+    </button>
+  );
+}
+```
+
+```jsx
+function NameInput() {
+  const [name, setName] = useState('');
+
+  return (
+    <div>
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="이름을 입력하세요"
+      />
+      <p>안녕하세요, {name || '방문자'}님!</p>
+    </div>
+  );
+}
+```
+
+## 주의할 점: 직접 수정하지 말 것
+
+상태를 업데이트할 때는 반드시 setter 함수를 써야 한다. 직접 값을 바꾸면 React가 변화를 감지하지 못해 화면이 업데이트되지 않는다.
+
+```jsx
+// 잘못된 방법 ❌
+count = count + 1;
+
+// 올바른 방법 ✅
+setCount(count + 1);
+```
+
+## 느낀 점
+
+처음에는 왜 그냥 변수를 쓰면 안 되는지 이해가 안 갔는데, "React는 상태가 바뀔 때만 화면을 다시 그린다"는 걸 알고 나니 납득이 됐다. `useState`는 React에게 "이 데이터가 바뀌면 화면도 다시 그려줘"라고 알려주는 약속 같은 것이었다. 훅이라는 개념이 처음엔 낯설었지만, 막상 써보니 코드가 굉장히 직관적이라서 금방 익숙해질 것 같다. 다음엔 `useEffect`도 공부해봐야겠다.
