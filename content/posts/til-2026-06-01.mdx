@@ -1,0 +1,106 @@
+---
+title: "오늘 배운 것: CSS Grid로 2차원 레이아웃 뚝딱 만들기"
+date: "2026-06-01"
+tags: ["TIL", "CSS", "Grid", "레이아웃"]
+category: "학습"
+description: "Flexbox가 1차원이라면 CSS Grid는 2차원 — 행과 열을 동시에 제어해 복잡한 레이아웃을 쉽게 만들 수 있다"
+draft: false
+---
+
+## Flexbox만으로는 뭔가 아쉬울 때
+
+지난번에 CSS Flexbox를 배우면서 '이제 레이아웃은 다 해결됐다!' 싶었다.  
+그런데 막상 카드 그리드나 신문처럼 생긴 레이아웃을 만들려고 하니 Flexbox만으로는 코드가 생각보다 복잡해졌다.
+
+Flexbox는 **한 방향(가로 또는 세로)** 으로 요소를 정렬하는 데 최적화되어 있다.  
+반면 **CSS Grid**는 **가로(열) + 세로(행) 두 방향을 동시에** 제어할 수 있어서, 2차원 레이아웃을 훨씬 직관적으로 만들 수 있다.
+
+---
+
+## 기본 사용법
+
+### 격자 만들기
+
+```css
+.container {
+  display: grid;
+
+  /* 3개의 열: 각각 1:1:1 비율로 공간을 나눔 */
+  grid-template-columns: 1fr 1fr 1fr;
+
+  /* 행 간격과 열 간격 */
+  gap: 16px;
+}
+```
+
+`fr`은 **fractional unit(분수 단위)** 의 약자로, 남은 공간을 비율로 나눠 갖는다.  
+`1fr 1fr 1fr` 대신 `repeat(3, 1fr)` 이라고 써도 결과가 같다.
+
+### 카드 그리드 예시
+
+```html
+<div class="grid-container">
+  <div class="card">카드 1</div>
+  <div class="card">카드 2</div>
+  <div class="card">카드 3</div>
+  <div class="card">카드 4</div>
+  <div class="card">카드 5</div>
+  <div class="card">카드 6</div>
+</div>
+```
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 20px;
+}
+
+.card {
+  background: #f0f4ff;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+```
+
+이 코드만으로 카드 6개가 3열로 깔끔하게 정렬된다. 예전에 `float`이나 `flex-wrap`으로 씨름하던 때가 떠오를 정도로 간단하다.
+
+### 반응형 그리드 — `auto-fill`과 `minmax`
+
+화면 너비에 따라 열 개수를 자동으로 조정하려면 이렇게 쓴다.
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+```
+
+- `minmax(200px, 1fr)` : 각 열이 최소 200px, 최대 가용 공간까지 늘어난다.
+- `auto-fill` : 열 너비를 유지하면서 한 줄에 들어갈 수 있는 만큼 열을 자동으로 생성한다.
+
+미디어 쿼리를 한 줄도 안 써도 알아서 반응형이 된다는 게 정말 놀라웠다.
+
+---
+
+## Flexbox vs Grid, 언제 뭘 쓰나?
+
+| 상황 | 추천 |
+|---|---|
+| 네비게이션 바, 버튼 그룹 등 **한 줄** 정렬 | Flexbox |
+| 카드 그리드, 페이지 전체 레이아웃 등 **행+열 동시** 제어 | Grid |
+
+둘 중 하나만 골라야 하는 게 아니라, **같이 써도 된다**는 것도 오늘 깨달았다.  
+Grid로 전체 페이지 틀을 잡고, 각 영역 안에서 Flexbox로 세부 정렬을 하는 방식이 실무에서도 자주 쓰인다고 한다.
+
+---
+
+## 느낀 점
+
+처음엔 `grid-template-columns`, `grid-template-rows`, `grid-area` 같은 속성 이름이 낯설어서 겁먹었다.  
+그런데 직접 카드 레이아웃을 만들어 보니까 "아, 이게 이래서 편하구나" 하는 순간이 왔다.  
+특히 `minmax` + `auto-fill` 조합으로 미디어 쿼리 없이 반응형을 만드는 건 진짜 마법 같았다.  
+앞으로 레이아웃 짤 때 Grid를 훨씬 적극적으로 써봐야겠다.
