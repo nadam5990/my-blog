@@ -1,0 +1,110 @@
+---
+title: "오늘 배운 것: CSS position 속성으로 요소를 원하는 곳에 배치하기"
+date: "2026-06-04"
+tags: ["TIL", "CSS", "레이아웃", "position"]
+category: "학습"
+description: "CSS position 속성의 static, relative, absolute, fixed, sticky 값을 이해하면 요소를 원하는 위치에 자유롭게 배치할 수 있다."
+draft: false
+---
+
+오늘은 CSS를 배우면서 항상 헷갈렸던 `position` 속성을 제대로 파고들었다. "왜 `top: 0`을 줬는데 움직이지 않지?" 같은 의문이 드셨다면, 이 글이 도움이 될 것이다!
+
+## position이란?
+
+`position` 속성은 HTML 요소를 문서 어디에 배치할지 결정한다. 기본값은 `static`이고, 총 5가지 값이 있다.
+
+---
+
+## 1. static (기본값)
+
+아무것도 지정하지 않으면 적용되는 값이다. 문서 흐름대로 순서대로 쌓인다. `top`, `left` 같은 위치 속성이 **전혀 먹히지 않는다.**
+
+```css
+.box {
+  position: static; /* 기본값이라 생략해도 됨 */
+}
+```
+
+---
+
+## 2. relative
+
+**자기 자신의 원래 위치를 기준**으로 이동한다. 이동해도 원래 자리는 그대로 남아있어서 주변 요소에 영향을 주지 않는다.
+
+```css
+.box {
+  position: relative;
+  top: 20px;   /* 원래 위치에서 아래로 20px */
+  left: 10px;  /* 원래 위치에서 오른쪽으로 10px */
+}
+```
+
+---
+
+## 3. absolute
+
+**가장 가까운 `position`이 지정된 조상 요소**를 기준으로 배치된다. 조상 중에 아무도 없으면 `<body>`가 기준이 된다. 문서 흐름에서 완전히 빠져나와서 다른 요소들은 이 요소가 없는 것처럼 배치된다.
+
+```css
+/* 부모에 relative를 주어야 absolute 자식이 부모를 기준으로 잡는다 */
+.parent {
+  position: relative;
+}
+
+.child {
+  position: absolute;
+  top: 0;
+  right: 0; /* 부모의 오른쪽 위 모서리에 붙음 */
+}
+```
+
+팝업, 툴팁, 드롭다운 메뉴처럼 **특정 요소 위에 겹쳐서 띄우는 UI**에 자주 쓰인다.
+
+---
+
+## 4. fixed
+
+**브라우저 화면(viewport)** 을 기준으로 배치된다. 스크롤을 해도 항상 같은 위치에 고정된다. 상단 네비게이션 바나 플로팅 버튼에 딱이다.
+
+```css
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+```
+
+---
+
+## 5. sticky
+
+`relative`와 `fixed`의 중간 느낌이다. 평소에는 문서 흐름대로 있다가, 스크롤이 지정한 지점에 닿으면 그 자리에 **달라붙는다(sticky)**.
+
+```css
+.section-title {
+  position: sticky;
+  top: 60px; /* 스크롤 시 상단에서 60px 지점에 고정 */
+  background: white;
+}
+```
+
+긴 테이블의 헤더나 섹션 제목을 항상 보이게 할 때 유용하다.
+
+---
+
+## 한눈에 비교
+
+| 값 | 기준 | 흐름에서 빠짐? |
+|---|---|---|
+| `static` | 없음 | 아니오 |
+| `relative` | 자기 원래 위치 | 아니오 |
+| `absolute` | 가까운 position 조상 | 예 |
+| `fixed` | 브라우저 화면 | 예 |
+| `sticky` | 스크롤 위치 | 아니오 (조건부 고정) |
+
+---
+
+## 느낀 점
+
+솔직히 `position: absolute`가 왜 엉뚱한 곳에 붙는지 몰라서 한참 헤맸었다. 알고 보니 부모에 `position: relative`를 안 줬기 때문이었다! 이 두 가지는 항상 세트로 생각해야겠다는 걸 몸으로 깨달았다. `sticky`도 처음엔 `fixed`랑 뭐가 다른가 싶었는데, 직접 스크롤해보니 확실히 다르다는 게 느껴졌다. CSS는 역시 직접 눈으로 보면서 배우는 게 최고인 것 같다. 🖥️
