@@ -1,0 +1,100 @@
+---
+title: "오늘 배운 것: React useEffect로 사이드 이펙트 다루기"
+date: "2026-06-05"
+tags: ["TIL", "React", "useEffect", "훅"]
+category: "학습"
+description: "컴포넌트가 렌더링된 뒤 실행해야 할 작업은 useEffect로 처리한다 — API 호출, 타이머, 이벤트 구독까지."
+draft: false
+---
+
+## useEffect가 뭔가요?
+
+어제 `useState`로 상태를 관리하는 법을 배웠는데, 오늘은 그 짝꿍 같은 훅인 `useEffect`를 배웠습니다.
+
+`useEffect`는 컴포넌트가 **화면에 렌더링된 뒤** 실행하고 싶은 코드를 담는 곳입니다. 예를 들면:
+
+- 서버에서 데이터 가져오기 (fetch)
+- 타이머 설정 (`setTimeout`, `setInterval`)
+- 브라우저 이벤트 구독/해제
+- 문서 제목(`document.title`) 바꾸기
+
+이런 작업들을 **사이드 이펙트(side effect)** 라고 부르고, 이것들을 처리하는 게 `useEffect`의 역할입니다.
+
+## 기본 사용법
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  // count가 바뀔 때마다 문서 제목을 업데이트
+  useEffect(() => {
+    document.title = `클릭 횟수: ${count}`;
+  }, [count]); // ← 의존성 배열
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      {count}번 클릭했어요
+    </button>
+  );
+}
+```
+
+두 번째 인자로 넘기는 배열을 **의존성 배열(dependency array)** 이라고 합니다. 여기에 적은 값이 바뀔 때만 `useEffect` 안의 코드가 실행됩니다.
+
+| 의존성 배열 | 언제 실행되나요? |
+|---|---|
+| 없음 | 매 렌더링마다 |
+| `[]` (빈 배열) | 최초 렌더링 한 번만 |
+| `[count]` | 처음 + `count`가 바뀔 때마다 |
+
+## API 데이터 가져오기 예시
+
+실전에서 가장 많이 쓰는 패턴입니다.
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function UserCard({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // 컴포넌트가 처음 마운트될 때 딱 한 번 실행
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setUser(data));
+  }, []); // 빈 배열 → 처음 한 번만
+
+  if (!user) return <p>불러오는 중...</p>;
+
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+    </div>
+  );
+}
+```
+
+## 정리(cleanup) 함수
+
+`useEffect`는 반환값으로 **정리 함수**를 돌려줄 수 있습니다. 컴포넌트가 화면에서 사라질 때(언마운트) 자동으로 호출돼서 타이머나 이벤트를 깔끔하게 해제할 수 있어요.
+
+```jsx
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log('1초마다 실행!');
+  }, 1000);
+
+  return () => {
+    clearInterval(timer); // 컴포넌트가 사라질 때 타이머 제거
+  };
+}, []);
+```
+
+## 느낀 점
+
+처음에 의존성 배열을 왜 넣어야 하는지 헷갈렸는데, "이 값이 바뀌면 다시 실행해 줘"라고 React에게 알려주는 힌트라고 생각하니까 훨씬 이해가 됐습니다. 빈 배열 `[]`을 넣으면 "한 번만 실행해 줘"라는 뜻이고요.
+
+`useState`와 `useEffect`, 이 두 훅만 제대로 익혀도 간단한 React 앱을 충분히 만들 수 있을 것 같아서 뿌듯했습니다. 다음엔 데이터를 불러올 때 로딩 상태와 에러 처리까지 더해보고 싶어요!
