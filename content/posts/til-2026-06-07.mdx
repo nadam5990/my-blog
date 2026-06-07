@@ -1,0 +1,101 @@
+---
+title: "오늘 배운 것: JavaScript 이벤트 리스너로 사용자 인터랙션 처리하기"
+date: "2026-06-07"
+tags: ["TIL", "JavaScript", "이벤트", "DOM"]
+category: "학습"
+description: "addEventListener로 클릭, 키보드 입력, 폼 제출 등 사용자 동작에 반응하는 코드를 작성하는 법을 배웠다."
+draft: false
+---
+
+## 이벤트 리스너란?
+
+웹 페이지는 사용자의 행동에 반응해야 한다. 버튼을 클릭하면 팝업이 열리고, 폼을 제출하면 데이터가 전송되고, 키를 누르면 단축키가 동작하는 것처럼. 이런 **사용자 동작(이벤트)**을 감지하고 처리하는 게 바로 이벤트 리스너다.
+
+`addEventListener` 메서드를 사용하면 DOM 요소에 이벤트 리스너를 붙일 수 있다.
+
+```js
+요소.addEventListener('이벤트종류', 처리함수);
+```
+
+---
+
+## 기본 예제: 버튼 클릭
+
+```html
+<button id="myBtn">눌러보세요!</button>
+<p id="result"></p>
+
+<script>
+  const btn = document.getElementById('myBtn');
+  const result = document.getElementById('result');
+
+  btn.addEventListener('click', function () {
+    result.textContent = '버튼이 클릭됐어요! 🎉';
+  });
+</script>
+```
+
+버튼을 클릭하면 `<p>` 태그의 텍스트가 바뀐다. 딱 이게 이벤트 리스너의 기본이다.
+
+---
+
+## 이벤트 객체 활용하기
+
+처리 함수는 `event` 객체를 인수로 받는다. 이 객체에는 어디서, 어떻게 이벤트가 발생했는지 정보가 담겨 있다.
+
+```js
+document.addEventListener('keydown', function (event) {
+  console.log('눌린 키:', event.key);
+
+  if (event.key === 'Enter') {
+    console.log('엔터 키를 눌렀습니다!');
+  }
+});
+```
+
+`event.key`로 어떤 키가 눌렸는지 알 수 있다. 검색창에서 엔터를 누르면 검색을 실행하는 기능이 이렇게 만들어진다.
+
+---
+
+## 폼 제출 막기
+
+폼의 기본 동작(페이지 새로고침)을 막고 싶을 때는 `event.preventDefault()`를 쓴다.
+
+```js
+const form = document.getElementById('loginForm');
+
+form.addEventListener('submit', function (event) {
+  event.preventDefault(); // 기본 제출 동작 차단
+
+  const username = document.getElementById('username').value;
+  console.log('입력된 이름:', username);
+  // 여기서 API 호출 등 원하는 처리를 하면 됨
+});
+```
+
+이걸 모르면 폼을 제출할 때마다 페이지가 새로고침되어서 당황했을 것이다.
+
+---
+
+## 이벤트 리스너 제거하기
+
+더 이상 필요 없는 이벤트 리스너는 `removeEventListener`로 제거할 수 있다. 이때 처리 함수는 **이름 있는 함수**로 만들어야 한다.
+
+```js
+function handleClick() {
+  console.log('클릭!');
+}
+
+btn.addEventListener('click', handleClick);
+
+// 나중에 제거
+btn.removeEventListener('click', handleClick);
+```
+
+익명 함수(`function() {}`)를 쓰면 나중에 제거할 수가 없으니 주의하자.
+
+---
+
+## 느낀 점
+
+처음에는 버튼에 `onclick="doSomething()"` 처럼 HTML 속성으로 이벤트를 넣는 방식을 썼는데, `addEventListener`를 배우고 나니 HTML과 JavaScript를 분리할 수 있어서 코드가 훨씬 깔끔해졌다. 이벤트 객체를 통해 어떤 키가 눌렸는지, 마우스가 어디에 있는지 등 다양한 정보를 얻을 수 있다는 것도 신기했다. 앞으로 인터랙티브한 UI를 만들 때 이벤트 리스너를 자유롭게 활용해봐야겠다.
