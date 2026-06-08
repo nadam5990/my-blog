@@ -1,0 +1,98 @@
+---
+title: "오늘 배운 것: CSS 변수(Custom Properties)로 스타일 한 곳에서 관리하기"
+date: "2026-06-08"
+tags: ["TIL", "CSS", "CustomProperties"]
+category: "학습"
+description: "CSS 변수를 사용하면 색상·폰트 크기 같은 값을 한 곳에서 선언하고 전체 스타일에 재사용할 수 있어요."
+draft: false
+---
+
+## CSS 변수란?
+
+CSS를 작성하다 보면 같은 색상 코드를 여러 곳에 반복해서 쓰게 되는 경우가 많아요.
+나중에 브랜드 색상을 바꿔야 한다면? 수십 군데를 일일이 찾아서 고쳐야 하죠. 😩
+
+이럴 때 **CSS 변수(CSS Custom Properties)** 가 정말 유용합니다.
+변수를 한 번 선언해두면 원하는 곳 어디서든 가져다 쓸 수 있고,
+나중에 값을 바꿀 때도 선언부 한 곳만 수정하면 돼요.
+
+## 선언하고 사용하는 방법
+
+CSS 변수는 `--변수명` 형태로 선언하고, `var(--변수명)` 으로 사용합니다.
+보통 `:root` 선택자에 선언해서 페이지 전체에서 쓸 수 있게 해요.
+
+```css
+/* 변수 선언 — 보통 :root에 모아 놓습니다 */
+:root {
+  --color-primary: #6366f1;
+  --color-text: #1f2937;
+  --color-bg: #ffffff;
+
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+
+  --spacing-md: 1rem;
+  --border-radius: 8px;
+}
+
+/* 변수 사용 */
+.button {
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-md) calc(var(--spacing-md) * 2);
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+}
+
+.heading {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+```
+
+## 다크 모드도 이렇게 간단하게!
+
+CSS 변수의 진짜 강점은 **변수 값만 바꾸면 테마 전환이 뚝딱** 된다는 점이에요.
+다크 모드를 구현할 때 클래스 하나로 손쉽게 처리할 수 있습니다.
+
+```css
+:root {
+  --color-text: #1f2937;
+  --color-bg: #ffffff;
+}
+
+/* 다크 모드: body에 .dark 클래스가 붙으면 변수 값만 교체 */
+.dark {
+  --color-text: #f9fafb;
+  --color-bg: #111827;
+}
+
+body {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  /* 나머지 컴포넌트들은 수정할 필요 없음! */
+}
+```
+
+JavaScript에서 `document.body.classList.toggle('dark')` 한 줄만 추가하면
+모든 컴포넌트가 한 번에 다크 모드로 바뀌는 거예요. 마법 같죠? ✨
+
+## 기본값 설정도 가능해요
+
+변수가 정의되지 않은 상황을 대비해 `var()` 의 두 번째 인자로 기본값을 넣을 수 있어요.
+
+```css
+.card {
+  /* --card-bg 변수가 없으면 흰색을 기본값으로 사용 */
+  background-color: var(--card-bg, #ffffff);
+}
+```
+
+## 느낀 점
+
+지금까지 색상 코드를 그냥 직접 적어 왔는데, CSS 변수를 배우고 나서 "왜 진작 안 썼지?" 싶었어요.
+변수를 `:root`에 모아두니 프로젝트의 디자인 토큰을 한눈에 볼 수 있고,
+Tailwind CSS의 테마 설정이나 디자인 시스템의 원리도 결국 이 CSS 변수 위에서 돌아간다는 걸 알게 됐어요.
+앞으로는 색상, 간격, 폰트 크기는 무조건 변수로 관리해야겠다고 다짐했습니다! 💪
