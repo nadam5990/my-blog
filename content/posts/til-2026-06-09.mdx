@@ -1,0 +1,82 @@
+---
+title: "오늘 배운 것: JavaScript async/await로 비동기 코드 깔끔하게 쓰기"
+date: "2026-06-09"
+tags: ["TIL", "JavaScript", "async", "비동기"]
+category: "학습"
+description: "콜백 지옥과 Promise 체인을 벗어나 async/await를 쓰면 비동기 코드도 동기 코드처럼 읽기 쉽게 쓸 수 있다."
+draft: false
+---
+
+## 오늘 배운 것: JavaScript async/await
+
+웹 개발을 하다 보면 서버에서 데이터를 불러오거나 파일을 읽는 것처럼 **시간이 걸리는 작업**을 자주 만나게 됩니다. 이런 작업을 처리하는 방식을 **비동기(asynchronous) 처리**라고 하는데, JavaScript에서는 오랫동안 콜백 함수와 Promise를 써왔어요.
+
+그런데 콜백이 중첩되면 코드가 오른쪽으로 계속 들어가는 "콜백 지옥"이 생기고, Promise 체인도 `.then().then().then()` 이 길어지면 읽기 불편합니다. 이 문제를 해결하기 위해 ES2017에서 등장한 것이 바로 **`async` / `await`** 입니다.
+
+## 기본 문법
+
+`async` 키워드를 함수 앞에 붙이면 그 함수는 항상 Promise를 반환하는 **비동기 함수**가 됩니다. 그리고 비동기 함수 내부에서 Promise 앞에 `await`를 붙이면, 그 Promise가 완료될 때까지 기다렸다가 결과값을 꺼내줍니다.
+
+```js
+// Promise 체인 방식
+function fetchUser() {
+  return fetch("https://api.example.com/user")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    });
+}
+
+// async/await 방식 — 훨씬 읽기 쉽다!
+async function fetchUser() {
+  const response = await fetch("https://api.example.com/user");
+  const data = await response.json();
+  console.log(data);
+}
+```
+
+두 코드는 동일하게 동작하지만, `async/await` 버전이 위에서 아래로 자연스럽게 읽히죠?
+
+## 에러 처리는 try/catch로
+
+비동기 작업이 실패할 수도 있으니 에러 처리도 중요합니다. `async/await`에서는 익숙한 `try/catch` 문을 그대로 쓸 수 있어요.
+
+```js
+async function fetchUserSafe() {
+  try {
+    const response = await fetch("https://api.example.com/user");
+
+    if (!response.ok) {
+      throw new Error(`서버 오류: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("유저 정보:", data);
+  } catch (error) {
+    console.error("데이터를 불러오지 못했어요:", error.message);
+  }
+}
+```
+
+Promise의 `.catch()`를 따로 붙이는 것보다 훨씬 자연스럽게 에러를 다룰 수 있습니다.
+
+## 여러 요청을 동시에 보내려면?
+
+요청을 순서대로 기다리면 느려질 수 있어요. 서로 독립적인 요청은 `Promise.all()`과 함께 쓰면 동시에 처리할 수 있습니다.
+
+```js
+async function fetchAll() {
+  const [users, posts] = await Promise.all([
+    fetch("/api/users").then((r) => r.json()),
+    fetch("/api/posts").then((r) => r.json()),
+  ]);
+
+  console.log(users, posts);
+}
+```
+
+두 요청이 병렬로 실행되니 훨씬 빠릅니다!
+
+## 느낀 점
+
+처음에 비동기 코드를 배울 때 콜백과 Promise가 너무 헷갈렸는데, `async/await`를 쓰니까 코드가 눈에 잘 들어왔어요. 마치 동기 코드를 읽는 것처럼 위에서 아래로 흐름을 따라갈 수 있어서 디버깅도 쉬워졌습니다. `try/catch`로 에러 처리까지 깔끔하게 할 수 있으니, 앞으로는 `async/await`를 기본으로 써야겠다는 생각이 들었습니다. 다만 `await`를 남발하면 불필요하게 순차 처리가 되어 느려질 수 있다는 점도 기억해야겠어요!
