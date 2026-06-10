@@ -1,0 +1,88 @@
+---
+title: "오늘 배운 것: localStorage로 브라우저에 데이터 저장하기"
+date: "2026-06-10"
+tags: ["TIL", "JavaScript", "WebAPI", "localStorage"]
+category: "학습"
+description: "페이지를 새로고침해도 데이터가 유지되는 localStorage 사용법을 익혀보자"
+draft: false
+---
+
+## localStorage가 뭔가요?
+
+웹 페이지를 만들다 보면 이런 상황이 자주 생깁니다. 사용자가 다크 모드를 켰는데, 새로고침하면 다시 라이트 모드로 돌아온다거나, 장바구니에 담은 상품이 탭을 닫으면 사라진다거나 하는 경우요.
+
+이때 활용할 수 있는 게 바로 **`localStorage`**입니다. 브라우저 안에 데이터를 저장해 두는 공간인데, 페이지를 새로고침하거나 브라우저를 껐다 켜도 데이터가 그대로 남아 있습니다.
+
+## 기본 사용법
+
+`localStorage`는 **키(key) - 값(value)** 쌍으로 데이터를 저장합니다. 사용법은 아주 간단합니다.
+
+```js
+// 저장하기
+localStorage.setItem("username", "김개발");
+
+// 불러오기
+const name = localStorage.getItem("username");
+console.log(name); // "김개발"
+
+// 삭제하기
+localStorage.removeItem("username");
+
+// 전체 비우기
+localStorage.clear();
+```
+
+한 가지 중요한 점은 **값은 반드시 문자열(string)로 저장된다는 것**입니다. 숫자나 객체를 저장하려면 `JSON.stringify()`와 `JSON.parse()`를 함께 사용해야 합니다.
+
+```js
+// 객체 저장하기
+const user = { name: "김개발", theme: "dark" };
+localStorage.setItem("user", JSON.stringify(user));
+
+// 객체 불러오기
+const savedUser = JSON.parse(localStorage.getItem("user"));
+console.log(savedUser.theme); // "dark"
+```
+
+## 실전 예제: 다크 모드 설정 기억하기
+
+아래는 사용자의 테마 설정을 기억하는 간단한 예제입니다.
+
+```js
+// 페이지 로드 시 저장된 테마 적용
+const savedTheme = localStorage.getItem("theme") || "light";
+document.body.dataset.theme = savedTheme;
+
+// 버튼 클릭 시 테마 전환 + 저장
+const toggleBtn = document.getElementById("theme-toggle");
+
+toggleBtn.addEventListener("click", () => {
+  const current = document.body.dataset.theme;
+  const next = current === "light" ? "dark" : "light";
+
+  document.body.dataset.theme = next;
+  localStorage.setItem("theme", next); // 변경된 테마 저장
+});
+```
+
+이제 사용자가 다크 모드로 바꾼 뒤 새로고침해도 설정이 유지됩니다.
+
+## sessionStorage와의 차이
+
+`localStorage`와 비슷하게 `sessionStorage`도 있습니다. 사용법은 동일하지만, `sessionStorage`는 **브라우저 탭을 닫으면 데이터가 사라진다**는 차이가 있습니다. 로그인 세션처럼 탭을 닫으면 초기화되어야 하는 데이터에는 `sessionStorage`가 더 적합합니다.
+
+| 구분 | localStorage | sessionStorage |
+|------|-------------|----------------|
+| 유지 기간 | 직접 삭제 전까지 영구 보관 | 탭을 닫으면 삭제 |
+| 용량 | 약 5MB | 약 5MB |
+| 탭 간 공유 | 공유됨 | 공유 안 됨 |
+
+## 느낀 점
+
+`localStorage`를 배우기 전에는 데이터를 유지하려면 무조건 서버가 필요하다고 생각했습니다. 그런데 테마 설정, 언어 설정, 최근 본 항목처럼 **간단한 사용자 설정은 클라이언트에서도 충분히 처리할 수 있다는 걸** 알게 됐습니다.
+
+다만, 비밀번호나 토큰 같은 민감한 정보는 `localStorage`에 절대 저장하면 안 된다고 합니다. XSS 공격에 취약하기 때문이라고 하는데, 보안 쪽도 조금씩 공부해봐야겠다는 생각이 들었습니다.
+
+---
+
+오늘도 한 가지 더 배웠다! 🙌
