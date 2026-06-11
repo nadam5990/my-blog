@@ -1,0 +1,84 @@
+---
+title: "오늘 배운 것: React useRef로 DOM 직접 다루기"
+date: "2026-06-11"
+tags: ["TIL", "React", "useRef", "DOM"]
+category: "학습"
+description: "useRef 훅으로 DOM 요소에 직접 접근하고, 리렌더링 없이 값을 유지하는 방법을 알아봤다."
+draft: false
+---
+
+## useRef가 뭐지?
+
+React에서는 보통 데이터를 `useState`로 관리하지만, 오늘은 조금 다른 목적의 훅인 **`useRef`** 를 배웠다.
+
+`useRef`는 두 가지 상황에서 유용하다.
+
+1. **DOM 요소에 직접 접근**할 때 (예: input에 자동으로 포커스 주기)
+2. **리렌더링을 유발하지 않으면서 값을 유지**할 때 (예: 타이머 ID 저장)
+
+---
+
+## 예제 1: input에 자동으로 포커스 주기
+
+페이지가 열리자마자 검색창에 커서가 자동으로 가 있는 경험, 다들 해봤을 것이다. `useRef`를 쓰면 이걸 간단하게 구현할 수 있다.
+
+```jsx
+import { useRef, useEffect } from "react";
+
+function SearchBox() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    // 컴포넌트가 마운트되면 input에 포커스
+    inputRef.current.focus();
+  }, []);
+
+  return <input ref={inputRef} type="text" placeholder="검색어를 입력하세요" />;
+}
+```
+
+`useRef(null)`로 ref 객체를 만들고, JSX의 `ref` 속성에 연결하면 된다. 그러면 `inputRef.current`가 실제 `<input>` DOM 요소를 가리키게 된다.
+
+---
+
+## 예제 2: 리렌더링 없이 값 유지하기
+
+`useState`로 관리하는 값은 바뀔 때마다 컴포넌트가 다시 렌더링된다. 하지만 화면에 보여줄 필요는 없고 그냥 값만 기억하고 싶을 때는 `useRef`가 더 적합하다.
+
+아래 예제는 버튼을 클릭한 횟수를 내부적으로만 추적하는 경우다.
+
+```jsx
+import { useRef } from "react";
+
+function ClickTracker() {
+  const countRef = useRef(0);
+
+  const handleClick = () => {
+    countRef.current += 1;
+    console.log(`총 클릭 횟수: ${countRef.current}`);
+    // 값이 바뀌어도 리렌더링은 일어나지 않음
+  };
+
+  return <button onClick={handleClick}>클릭!</button>;
+}
+```
+
+`countRef.current`를 직접 수정해도 React는 렌더링을 다시 하지 않는다. 타이머 ID나 이전 값 비교처럼 "화면엔 안 보여도 되는 내부 데이터"에 딱 맞는 방식이다.
+
+---
+
+## useState vs useRef 한눈에 비교
+
+| 특징 | `useState` | `useRef` |
+|------|-----------|---------|
+| 값 변경 시 리렌더링 | O | X |
+| 화면에 표시할 데이터 | 적합 | 부적합 |
+| DOM 접근 | X | O |
+
+---
+
+## 느낀 점
+
+처음에는 "그냥 변수 쓰면 되지 않나?" 싶었는데, 컴포넌트 함수 안에 선언된 일반 변수는 렌더링될 때마다 초기화된다는 걸 배웠다. `useRef`는 렌더링이 몇 번 일어나도 값이 유지된다는 점이 핵심이다.
+
+포커스 자동 이동이나 스크롤 제어처럼 "React 바깥의 DOM을 건드려야 할 때" `useRef`가 있다는 게 참 다행이다. 앞으로 input 자동 포커스 기능을 구현할 때 써먹어야겠다!
