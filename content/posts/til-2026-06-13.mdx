@@ -1,0 +1,93 @@
+---
+title: "오늘 배운 것: CSS Flexbox로 요소를 자유자재로 정렬하기"
+date: "2026-06-13"
+tags: ["TIL", "CSS", "Flexbox", "레이아웃"]
+category: "학습"
+description: "CSS Flexbox를 쓰면 가로·세로 정렬, 간격 조절, 줄 바꿈까지 단 몇 줄의 코드로 해결할 수 있다."
+draft: false
+---
+
+## CSS Flexbox란?
+
+웹 페이지를 만들다 보면 "이 버튼을 딱 가운데에 놓고 싶다"거나 "카드 세 개를 가로로 나란히 두되 간격을 균등하게 하고 싶다"는 상황이 자주 생긴다. 예전에는 `float`나 음수 `margin` 같은 꼼수를 써야 했지만, **Flexbox(플렉스박스)** 를 쓰면 이런 문제를 아주 직관적으로 해결할 수 있다.
+
+Flexbox는 **1차원** 레이아웃 시스템이다. 가로 방향(행) 혹은 세로 방향(열) 중 하나를 기준으로 아이템을 배치한다. (2차원이 필요하다면 CSS Grid를 쓰자!)
+
+---
+
+## 기본 사용법
+
+Flexbox를 켜려면 부모 요소에 `display: flex`만 써주면 된다.
+
+```css
+.container {
+  display: flex;
+}
+```
+
+이것만으로도 자식 요소들이 가로로 나란히 늘어선다. 여기에 몇 가지 속성을 더하면 훨씬 다양한 배치가 가능하다.
+
+### 자주 쓰는 속성 모음
+
+```css
+.container {
+  display: flex;
+
+  /* 주축 방향 정렬 (기본값: 가로) */
+  flex-direction: row;         /* row | column | row-reverse | column-reverse */
+
+  /* 주축 기준 아이템 배치 */
+  justify-content: center;     /* flex-start | flex-end | center | space-between | space-around | space-evenly */
+
+  /* 교차축 기준 아이템 정렬 */
+  align-items: center;         /* stretch | flex-start | flex-end | center | baseline */
+
+  /* 아이템이 넘칠 때 줄 바꿈 여부 */
+  flex-wrap: wrap;             /* nowrap | wrap */
+
+  /* 아이템 사이 간격 */
+  gap: 16px;
+}
+```
+
+### 실전 예제: 버튼을 화면 정중앙에 배치하기
+
+```html
+<div class="center-box">
+  <button>클릭하세요</button>
+</div>
+```
+
+```css
+.center-box {
+  display: flex;
+  justify-content: center; /* 가로 중앙 */
+  align-items: center;     /* 세로 중앙 */
+  height: 100vh;
+}
+```
+
+`justify-content: center`는 주축(가로) 방향으로, `align-items: center`는 교차축(세로) 방향으로 아이템을 가운데 정렬한다. 이 두 줄만으로 완벽한 수직·수평 중앙 정렬이 완성된다.
+
+### 카드 목록을 균등하게 나열하기
+
+```css
+.card-list {
+  display: flex;
+  flex-wrap: wrap;         /* 화면이 좁으면 아래 줄로 내림 */
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.card {
+  flex: 1 1 200px;         /* 최소 200px, 여유 공간은 균등 분배 */
+}
+```
+
+`flex: 1 1 200px`은 `flex-grow: 1`, `flex-shrink: 1`, `flex-basis: 200px`의 줄임 표현이다. 아이템이 여유 공간을 균등하게 나눠 갖도록 해 준다.
+
+---
+
+## 느낀 점
+
+Flexbox를 배우기 전까지는 "왜 이게 가운데 안 가지?"라며 `margin: auto`를 여기저기 붙이고 삽질했는데, 막상 써 보니 정말 간단했다. 특히 `justify-content`와 `align-items`의 **주축/교차축** 개념을 이해하고 나서는 레이아웃 짜는 게 훨씬 자신감 있게 느껴졌다. 처음에는 헷갈릴 수 있지만 직접 코드를 바꿔 가며 결과를 확인하면 금방 익숙해진다. [Flexbox Froggy](https://flexboxfroggy.com/#ko) 같은 게임으로 연습하는 것도 강력 추천!
