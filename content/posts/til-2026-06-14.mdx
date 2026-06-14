@@ -1,0 +1,124 @@
+---
+title: "오늘 배운 것: CSS Transition과 Animation으로 움직임 주기"
+date: "2026-06-14"
+tags: ["TIL", "CSS", "Animation", "Transition"]
+category: "학습"
+description: "CSS transition과 animation 속성을 쓰면 JavaScript 없이도 부드러운 인터랙션과 애니메이션을 만들 수 있다."
+draft: false
+---
+
+## 정적인 웹에서 살아있는 웹으로
+
+처음 CSS를 배울 때는 색상이나 크기를 바꾸는 것만으로도 신기했다. 그런데 버튼을 호버했을 때 색이 **툭** 바뀌는 게 영 어색해 보였다. "왜 이렇게 딱딱하지?" 하고 생각했는데, 오늘 `transition`과 `animation`을 배우고 나서야 그 답을 찾았다.
+
+---
+
+## CSS Transition — 상태 변화를 부드럽게
+
+`transition`은 요소의 속성이 **A 상태 → B 상태**로 바뀔 때 그 변화를 애니메이션처럼 처리해 주는 속성이다.
+
+```css
+/* 기본 문법 */
+transition: 속성이름 지속시간 타이밍함수 딜레이;
+```
+
+버튼에 호버 효과를 부드럽게 주는 예시를 보자.
+
+```css
+.btn {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  /* 배경색 변화를 0.3초 동안 부드럽게 */
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #1d4ed8;
+}
+```
+
+이 코드만 있으면 마우스를 올렸을 때 색이 자연스럽게 스르륵 바뀐다. `ease` 대신 `linear`, `ease-in`, `ease-out`, `ease-in-out` 등을 써서 가속도 곡선도 조절할 수 있다.
+
+여러 속성을 한 번에 전환하고 싶다면:
+
+```css
+.card {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+```
+
+카드가 위로 살짝 떠오르는 느낌! `transition: all 0.3s ease`처럼 `all`을 쓰면 모든 속성에 적용되지만, 불필요한 속성까지 감지하면 성능에 영향을 줄 수 있어서 필요한 속성만 명시하는 게 좋다.
+
+---
+
+## CSS Animation — 키프레임으로 자유롭게
+
+`transition`이 두 상태 사이의 변화라면, `animation`은 내가 원하는 **여러 단계**를 직접 설계할 수 있다. `@keyframes`로 애니메이션의 흐름을 정의한다.
+
+```css
+/* 1) 키프레임 정의 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2) 요소에 적용 */
+.hero-text {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+```
+
+`forwards`를 쓰면 애니메이션이 끝난 후 마지막 상태를 유지한다. `infinite`를 추가하면 무한 반복도 된다.
+
+로딩 스피너도 이렇게 만들 수 있다:
+
+```css
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+```
+
+---
+
+## transition vs animation 언제 써야 할까?
+
+| 상황 | 추천 |
+|------|------|
+| 호버, 클릭 등 사용자 동작에 반응 | `transition` |
+| 페이지 로드 시 자동 재생 | `animation` |
+| 복잡한 여러 단계의 움직임 | `animation` + `@keyframes` |
+
+---
+
+## 느낀 점
+
+오늘 배우면서 제일 놀란 점은 JavaScript를 한 줄도 안 쓰고 이렇게 생동감 있는 UI를 만들 수 있다는 것이었다. 예전에 "애니메이션은 어렵겠지"라고 지레 겁먹었는데, `transition`은 정말 속성 하나로 끝이라 생각보다 훨씬 쉬웠다. 앞으로 컴포넌트를 만들 때 transition을 기본으로 넣는 습관을 들여야겠다. 사용자 입장에서 '딱딱한 변화'와 '부드러운 변화'의 차이는 생각보다 훨씬 크다는 걸 느꼈다.
