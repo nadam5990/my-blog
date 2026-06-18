@@ -1,0 +1,96 @@
+---
+title: "오늘 배운 것: TypeScript 기초 — 타입 어노테이션과 인터페이스"
+date: "2026-06-18"
+tags: ["TIL", "TypeScript", "타입", "인터페이스"]
+category: "학습"
+description: "TypeScript의 기본 타입 어노테이션과 인터페이스를 활용해 더 안전한 코드를 작성하는 방법을 알아봤다."
+draft: false
+---
+
+## TypeScript, 왜 쓰는 걸까?
+
+JavaScript를 쓰다 보면 이런 실수를 한 번쯤 해봤을 것이다.
+
+```js
+function greet(name) {
+  return "안녕하세요, " + name.toUpperCase() + "!";
+}
+
+greet(42); // 런타임 에러! 숫자엔 toUpperCase가 없다
+```
+
+코드를 실행하기 전까지는 아무런 경고도 없다. TypeScript는 이 문제를 **실행 전에 미리** 잡아준다. 즉, 코드가 브라우저에서 돌아가기도 전에 "여기 잘못됐어요!"라고 알려주는 도구다.
+
+## 타입 어노테이션 (Type Annotation)
+
+변수나 함수에 `:타입` 형식으로 타입을 명시하는 것을 **타입 어노테이션**이라고 한다.
+
+```ts
+// 변수에 타입 지정
+let username: string = "김철수";
+let age: number = 25;
+let isLoggedIn: boolean = false;
+
+// 배열
+let scores: number[] = [90, 85, 78];
+
+// 함수의 매개변수와 반환값에도 타입을 붙일 수 있다
+function greet(name: string): string {
+  return "안녕하세요, " + name.toUpperCase() + "!";
+}
+
+greet("지수");  // OK
+greet(42);      // 에러: 'number'는 'string'에 할당할 수 없습니다
+```
+
+이제 `greet(42)`를 쓰는 순간 에디터가 빨간 줄을 그어준다. 런타임 오류가 되기 훨씬 전에 발견할 수 있다.
+
+## 인터페이스 (Interface)
+
+여러 속성이 모인 **객체의 구조**를 정의할 때는 `interface`를 사용한다. 특히 React에서 컴포넌트 props의 타입을 정의할 때 자주 쓰인다.
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number; // '?'는 선택적 속성 (없어도 OK)
+}
+
+function printUser(user: User): void {
+  console.log(`${user.name} (${user.email})`);
+}
+
+const myUser: User = {
+  id: 1,
+  name: "박지수",
+  email: "jisu@example.com",
+};
+
+printUser(myUser); // 박지수 (jisu@example.com)
+
+// id를 빠뜨리면? → 에러 발생
+const badUser: User = {
+  name: "홍길동",
+  email: "hong@example.com",
+  // id가 없으니 TypeScript가 바로 잡아준다
+};
+```
+
+## 유니온 타입 (Union Type)
+
+때로는 하나의 변수가 여러 타입을 가질 수 있다. `|`(파이프)로 묶어주면 된다.
+
+```ts
+let result: string | number;
+
+result = "성공";  // OK
+result = 404;     // OK
+result = true;    // 에러: boolean은 허용되지 않음
+```
+
+API 응답이 성공하면 문자열, 실패하면 에러 코드(숫자)를 반환하는 경우처럼, 실제 코드에서도 자주 쓰이는 패턴이다.
+
+## 느낀 점
+
+처음에는 "JavaScript에 타입까지 써야 해? 귀찮은 것 아냐?"라고 생각했다. 그런데 직접 써보니 **에디터의 자동완성이 훨씬 정확해지고**, 오타나 잘못된 타입을 코드를 실행하기 전에 바로 발견할 수 있어서 오히려 개발이 더 빨라지는 느낌이었다. 특히 팀 프로젝트처럼 여러 명이 같은 코드를 읽고 쓰는 상황에서는 인터페이스로 데이터 구조를 명확하게 공유할 수 있어 정말 유용할 것 같다. TypeScript는 초반 학습 비용이 조금 있지만, 장기적으로 보면 분명 이득이라는 걸 오늘 느꼈다.
