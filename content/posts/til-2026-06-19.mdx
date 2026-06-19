@@ -1,0 +1,68 @@
+---
+title: "오늘 배운 것: React useState로 컴포넌트에 생명을 불어넣기"
+date: "2026-06-19"
+tags: ["TIL", "React", "useState", "훅"]
+category: "학습"
+description: "React의 useState 훅을 사용하면 컴포넌트 안에서 값이 바뀔 때마다 화면이 자동으로 업데이트된다."
+draft: false
+---
+
+## useState란?
+
+React로 화면을 만들다 보면 "버튼을 클릭했을 때 숫자가 올라가게 하고 싶다", "입력창에 뭔가 치면 아래에 바로 보이게 하고 싶다" 같은 상황이 금방 생긴다. 이럴 때 필요한 게 바로 **상태(state)** 다.
+
+`useState`는 React가 제공하는 훅(Hook) 중 하나로, 컴포넌트 안에 **변화하는 값**을 저장하고, 그 값이 바뀌면 화면을 자동으로 다시 그려준다. 일반 변수(`let count = 0`)로는 이 동작을 할 수 없다 — 값이 바뀌어도 React가 모르기 때문이다.
+
+## 기본 사용법
+
+```jsx
+import { useState } from 'react';
+
+function Counter() {
+  // [현재값, 값을 바꾸는 함수] 형태로 구조 분해
+  const [count, setCount] = useState(0); // 초기값 0
+
+  return (
+    <div>
+      <p>현재 카운트: {count}</p>
+      <button onClick={() => setCount(count + 1)}>+1 증가</button>
+      <button onClick={() => setCount(0)}>초기화</button>
+    </div>
+  );
+}
+```
+
+`useState(0)`에서 `0`은 초기값이다. 반환값은 배열인데, 첫 번째 요소가 **현재 상태값**, 두 번째 요소가 **상태를 업데이트하는 함수**다. 관례적으로 `set상태이름` 형태로 이름을 붙인다.
+
+## 문자열·객체도 OK
+
+숫자뿐 아니라 문자열, 불리언, 객체, 배열 모두 상태로 관리할 수 있다.
+
+```jsx
+function NameInput() {
+  const [name, setName] = useState('');
+
+  return (
+    <div>
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="이름을 입력하세요"
+      />
+      {name && <p>안녕하세요, {name}님!</p>}
+    </div>
+  );
+}
+```
+
+입력창에 글자를 치는 순간 `setName`이 호출되고, `name`이 업데이트되면서 아래 인사말이 실시간으로 바뀐다.
+
+## 주의할 점
+
+- **상태를 직접 수정하면 안 된다.** `count = count + 1` 대신 반드시 `setCount(count + 1)`을 써야 React가 변화를 감지한다.
+- **훅은 컴포넌트 최상단에서만 호출해야 한다.** `if` 문이나 반복문 안에서 `useState`를 쓰면 오류가 난다.
+- 이전 상태값을 기반으로 업데이트할 때는 **함수형 업데이트**가 더 안전하다: `setCount(prev => prev + 1)`.
+
+## 느낀 점
+
+처음에는 "그냥 변수 쓰면 되지 왜 굳이 useState야?" 싶었는데, 직접 만들어보니 차이가 확실히 느껴졌다. 일반 변수로 바꿔 테스트해봤더니 버튼을 아무리 눌러도 화면이 꿈쩍도 안 했다. React가 상태 변화를 추적해서 필요한 부분만 다시 렌더링해주는 구조라는 걸 몸으로 이해한 순간이었다. useState 하나만 잘 써도 웬만한 인터랙션은 다 만들 수 있겠다는 자신감이 생겼다!
