@@ -1,0 +1,84 @@
+---
+title: "오늘 배운 것: 옵셔널 체이닝(?.)과 널 병합 연산자(??)로 안전하게 코딩하기"
+date: "2026-06-30"
+tags: ["TIL", "JavaScript", "ES2020"]
+category: "학습"
+description: "undefined와 null 때문에 앱이 터지는 걸 막아주는 ?. 와 ?? 연산자를 알아봅니다."
+draft: false
+---
+
+## 오늘 배운 것
+
+JavaScript를 쓰다 보면 아래처럼 앱이 갑자기 터지는 경험을 한 번쯤 해봤을 거예요.
+
+```
+TypeError: Cannot read properties of undefined (reading 'name')
+```
+
+오늘은 이런 에러를 우아하게 막아주는 두 가지 연산자, **옵셔널 체이닝(`?.`)** 과 **널 병합 연산자(`??`)** 를 배웠습니다.
+
+---
+
+## 옵셔널 체이닝 (`?.`)
+
+객체의 속성에 접근할 때, 중간에 `null`이나 `undefined`가 있으면 에러가 납니다. 기존에는 이렇게 방어 코드를 써야 했어요.
+
+```js
+// 예전 방식 — 조건이 중첩될수록 코드가 길어짐
+const city = user && user.address && user.address.city;
+```
+
+옵셔널 체이닝을 쓰면 훨씬 간결해집니다.
+
+```js
+// 옵셔널 체이닝 사용
+const city = user?.address?.city;
+```
+
+`user`가 `null`이나 `undefined`이면 에러를 던지는 대신 그냥 `undefined`를 반환합니다. 함수 호출에도 쓸 수 있어요.
+
+```js
+// 메서드가 없을 수도 있을 때
+const result = response?.toJSON?.();
+
+// 배열 요소 접근
+const first = arr?.[0];
+```
+
+---
+
+## 널 병합 연산자 (`??`)
+
+값이 `null`이나 `undefined`일 때 대신 쓸 **기본값**을 지정하고 싶을 때 사용합니다.
+
+```js
+const username = user?.name ?? "익명 사용자";
+const age = user?.age ?? 0;
+```
+
+`||` 연산자와 비슷해 보이지만, 중요한 차이가 있습니다. `||`는 `0`, `""`, `false` 같은 **falsy 값도 기본값으로 대체**해버리지만, `??`는 오직 `null`과 `undefined`만 대체합니다.
+
+```js
+const count = 0;
+
+console.log(count || 10);  // 10  ← 0을 falsy로 처리해서 10이 나옴
+console.log(count ?? 10);  //  0  ← 0은 유효한 값이므로 그대로 0
+```
+
+---
+
+## 둘을 함께 쓰면 진짜 강력해요
+
+```js
+// API 응답에서 안전하게 값을 꺼내는 패턴
+const displayName = apiResponse?.user?.profile?.nickname ?? "이름 없음";
+const followerCount = apiResponse?.stats?.followers ?? 0;
+
+console.log(`${displayName} (팔로워: ${followerCount}명)`);
+```
+
+---
+
+## 느낀 점
+
+전에는 `if (obj && obj.a && obj.a.b)` 처럼 방어 코드를 여러 줄 썼는데, `?.`와 `??`를 알고 나니 코드가 훨씬 읽기 쉬워졌어요. 특히 API에서 받아온 데이터를 다룰 때 중간 값이 없을 수도 있는 상황이 많은데, 이제 자신 있게 쓸 수 있을 것 같습니다. TypeScript와 함께 쓰면 더 안전한 코드를 작성할 수 있다고 하니 이쪽도 공부해봐야겠어요!
